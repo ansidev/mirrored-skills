@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  SKILL_DIR: skills
+
+tasks:
+  install:
+    desc: Install a skill
+    cmds:
+      - |
+        set -eu
+        REPO_URL="{{.REPO_URL}}"
+        REPO_NAME=$(basename "${REPO_URL%.git}")
+        SKILL_PATH="{{.SKILL_DIR}}/$REPO_NAME"
+        echo "Deleting $SKILL_PATH"
+        rm -rf "$SKILL_PATH"
+        git clone "$REPO_URL" "$SKILL_PATH"
+        rm -rf "$SKILL_PATH/.git"
+    silent: true
+
+  install-all:
+    desc: Install all skills
+    deps:
+      - task: install
+        vars:
+          REPO_URL: git@github.com:blader/humanizer.git
+      - task: install
+        vars:
+          REPO_URL: git@github.com:nidhinjs/prompt-master.git
+    cmds:
+      - echo "Done."
+    silent: true
